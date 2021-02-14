@@ -25,6 +25,39 @@ server.register(Vision, (err) => {
   });
 });
 
+/*
+  Create home route to display standings
+  - route is a GET request to the project home page ('/')
+  - one route is hit, make an API request to Football-data API
+  - Using the Request HTTP client, we make GET request on Football-data API
+  - competitions/{id}/leagueTable endpoint with a specific competition ID
+    which will get the League table for the competition
+    - 438 ius the ID for Serie A
+    - so getting the league table for Serie A
+  - then send the respo
+
+ */
+server.route({
+  method: 'GET',
+  path: '/',
+  handler: function (request, reply){
+    Request.get('https://api.football-data.org/v1/competitions/438/leagueTable',
+        function (error, response, body) {
+          if (error) {
+            throw error;
+          }
+
+          const data = JSON.parse(body);
+          reply.view('index', {result: data});
+        });
+  }
+});
+
+// simple helper fuinction that extracts team ID from the team URL
+Handlebars.registerHelper('teamID', function (teamUrl) {
+  return teamUrl.slice(38);
+});
+
 server.start((err) => {
   if (err) {
     throw err;
